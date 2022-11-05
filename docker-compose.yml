@@ -3,16 +3,12 @@ version: "3.3"
 services:
   database:
     container_name: database
-    image: postgres:12.8
+    image: postgres:14.5-alpine
     restart: always
     environment:
-      - POSTGRES_USER=pg
-      - POSTGRES_PASSWORD=pass
-      - POSTGRES_DB=crud
+      - POSTGRES_PASSWORD=postgres
     ports:
       - 5432:5432
     volumes:
-      - db:/var/lib/postgresql/data 
+      - ./vols/init.sql:/docker-entrypoint-initdb.d/init.sql
 
-volumes:
-  db:
