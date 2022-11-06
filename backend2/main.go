@@ -87,5 +87,9 @@ func createNewCustomer(w http.ResponseWriter, r *http.Request) {
 func alterCustomer(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	var customer Customer
+	db.First(&customer, params["id"])
+	json.NewDecoder(r.Body).Decode(&customer)
+	db.Save(&customer)
+	json.NewEncoder(w).Encode(customer)
 
 }
