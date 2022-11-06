@@ -1,9 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
+
+	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
@@ -45,4 +49,43 @@ func main(){
 
 	// Make migrations to the db if they have not already been created
 	db.AutoMigrate(&Customer{})
+
+	// API routes
+	router := mux.NewRouter()
+	router.HandleFunc("/customers", getCustomers).Methods("GET")
+	router.HandleFunc("/customers/{id}", getCustomerById).Methods("GET")
+	router.HandleFunc("/customers", createNewCustomer).Methods("POST")
+	router.HandleFunc("/customers/{id}", alterCustomer).Methods("PUT")
+
+	log.Fatal(http.ListenAndServe(":8080", router))
+}
+
+// API Controllers
+func getCustomers(w http.ResponseWriter, r *http.Request) {
+	var customer []Customer
+	db.Find(&customer)
+	json.NewEncoder(w).Enconde(&customer)
+}
+func getCustomerById(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	var customer Customer
+	db.First(&customer, params["id"])
+	json.NewEncoder(w).Enconde(customer)
+}
+func createNewCustomer(w http.ResponseWriter, r *http.Request) {
+	var customer Customer
+	json.NewDecoder(r.Body).Decode(&customer)
+
+	createdCustomer := db.Create(&customer)
+	err := createdCustomer.Error
+	if  err != nil {
+		json.NewEncoder(w).Encode(err)
+	} else  {
+		json.NewEncoder(w).Encode(&person)
+	}
+}
+func alterCustomer(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	var customer Customer
+
 }
