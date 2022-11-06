@@ -64,13 +64,13 @@ func main(){
 func getCustomers(w http.ResponseWriter, r *http.Request) {
 	var customer []Customer
 	db.Find(&customer)
-	json.NewEncoder(w).Enconde(&customer)
+	json.NewEncoder(w).Encode(&customer)
 }
 func getCustomerById(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	var customer Customer
 	db.First(&customer, params["id"])
-	json.NewEncoder(w).Enconde(customer)
+	json.NewEncoder(w).Encode(customer)
 }
 func createNewCustomer(w http.ResponseWriter, r *http.Request) {
 	var customer Customer
@@ -81,7 +81,7 @@ func createNewCustomer(w http.ResponseWriter, r *http.Request) {
 	if  err != nil {
 		json.NewEncoder(w).Encode(err)
 	} else  {
-		json.NewEncoder(w).Encode(&person)
+		json.NewEncoder(w).Encode(&customer)
 	}
 }
 func alterCustomer(w http.ResponseWriter, r *http.Request) {
@@ -91,5 +91,4 @@ func alterCustomer(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&customer)
 	db.Save(&customer)
 	json.NewEncoder(w).Encode(customer)
-
 }
